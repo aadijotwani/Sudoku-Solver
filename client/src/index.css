@@ -1,1 +1,20 @@
-@import 'tailwindcss'
+@import 'tailwindcss';
+
+@theme {
+  --font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --color-primary: #6C4BEF;
+  --color-page-bg: #F7F6FC;
+  --color-main-text: #202033;
+  --color-secondary-text: #77768A;
+  --color-border-normal: #E1DFEB;
+  --color-border-strong: #77758B;
+  --color-cell-selected: #EAE5FF;
+}
+
+body {
+  font-family: var(--font-sans);
+  background-color: #F7F6FC;
+  color: #202033;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
