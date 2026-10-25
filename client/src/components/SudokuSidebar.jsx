@@ -5,11 +5,10 @@ import {
   MdOutlineSkipPrevious,
 } from "react-icons/md";
 
-const SudokuSidebar = () => {
+const SudokuSidebar = ({ onValidate }) => {
   return (
     <aside
       className="w-full max-w-[534px] lg:w-[320px] xl:w-[340px] shrink-0 rounded-2xl sm:rounded-3xl bg-white p-5 sm:p-6 shadow-[0_4px_24px_-4px_rgba(32,32,51,0.06),0_2px_8px_-2px_rgba(32,32,51,0.04)] border border-[#E1DFEB]/70 flex flex-col justify-between"
-      aria-label="Solver controls and details"
     >
       <div>
         {/* Header */}
@@ -108,6 +107,16 @@ const SudokuSidebar = () => {
         <p className="mt-3 text-center text-[11px] leading-4 text-[#77768A]">
           Start the solver to explore every move.
         </p>
+
+        {/* Validate Button */}
+        <button
+          type="button"
+          name="validate"
+          onClick={onValidate}
+          className="mt-4 w-full flex items-center justify-center h-10 sm:h-11 rounded-xl bg-[#6C4BEF] hover:bg-[#5839D6] text-white text-xs sm:text-sm font-semibold shadow-xs hover:shadow transition-all duration-150 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#6C4BEF] focus-visible:ring-offset-2 active:scale-[0.98]"
+        >
+          Validate
+        </button>
       </div>
     </aside>
   );

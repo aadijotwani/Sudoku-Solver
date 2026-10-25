@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+import toast from "react-hot-toast";
+import {isValidMove} from "../utils/sudokuValidation.js"
 
 const SudokuBoard = () => {
   const puzzle = Array.from({ length: 9 }, () => Array(9).fill(0));
@@ -45,7 +47,7 @@ const SudokuBoard = () => {
       if (col === 2 || col === 5) {
         border += " border-r-2 border-r-[#77758B]";
       } else {
-        border += " border-r border-r-[#E1DFEB]";
+        border += " border-r border-r-[#C3C2D6]";
       }
     }
 
@@ -53,7 +55,7 @@ const SudokuBoard = () => {
       if (row === 2 || row === 5) {
         border += " border-b-2 border-b-[#77758B]";
       } else {
-        border += " border-b border-b-[#E1DFEB]";
+        border += " border-b border-b-[#C3C2D6]";
       }
     }
 
@@ -61,23 +63,40 @@ const SudokuBoard = () => {
   };
 
   const handleChange = (e) => {
-    console.log("handleCHANGE TRIGGERED")
     const value = e.target.value;
     const row = Number(e.target.dataset.row);
     const col = Number(e.target.dataset.col);
 
-    console.log({ value, row, col });
+    const digit = value.slice(-1);
 
-    if (value !== "" && !/^[1-9]$/.test(value)) {
+    if (value !== "" && !/^[1-9]$/.test(digit)) {
+      toast.error("Please enter valid digit 0-9");
       return;
     }
+
+    if (value === "") {
+    const updatedPuzzle = [...puzzleValue];
+    updatedPuzzle[row] = [...puzzleValue[row]];
+    updatedPuzzle[row][col] = 0;
+
+    setPuzzleValue(updatedPuzzle);
+    return;
+}
+
+    const result = isValidMove(puzzleValue, Number(digit), row, col);
+
+    if(result.isValid === false){
+      toast.error(result.reason);
+      return;
+    }
+
 
     const updatedPuzzle = [...puzzleValue];
 
     updatedPuzzle[row] = [...puzzleValue[row]];
-    updatedPuzzle[row][col] = value === "" ? 0 : Number(value);
+    updatedPuzzle[row][col] = value === "" ? 0 : Number(digit);
 
-    setPuzzleValue(updatedPuzzle);``
+    setPuzzleValue(updatedPuzzle);
   };
 
   return (
@@ -92,19 +111,21 @@ const SudokuBoard = () => {
                 key={colIndex}
                 type="text"
                 inputMode="numeric"
-                data-row = { rowIndex }
-                data-col = { colIndex }
+                data-row={rowIndex}
+                data-col={colIndex}
                 value={
                   puzzleValue[rowIndex][colIndex] === 0
                     ? ""
                     : puzzleValue[rowIndex][colIndex]
                 }
-                onFocus={() =>
+                onFocus={(e) => {
                   setSelectedCell({
                     row: rowIndex,
                     col: colIndex,
-                  })
-                }
+                  });
+
+                  e.target.select();
+                }}
                 onChange={handleChange}
                 className={`flex h-full w-full cursor-pointer select-none items-center justify-center text-sm font-medium transition-colors duration-150 focus-visible:z-10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#6C4BEF] sm:text-base md:text-lg text-center align-middle${getCellBorder(rowIndex, colIndex)} ${getCellColor(rowIndex, colIndex)}`}
               ></input>
