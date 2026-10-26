@@ -1,14 +1,16 @@
 import React, { useState } from "react";
 import toast from "react-hot-toast";
-import {isValidMove} from "../utils/sudokuValidation.js"
+import { isValidMove } from "../utils/sudokuValidation.js";
 
-const SudokuBoard = () => {
-  const puzzle = Array.from({ length: 9 }, () => Array(9).fill(0));
+const SudokuBoard = ({
+  puzzleValue,
+  setPuzzleValue,
+  conflicts,
+  isValidated,
+}) => {
   const numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9];
 
   // Store the selected cell's position
-
-  const [puzzleValue, setPuzzleValue] = useState(puzzle);
   const [selectedCell, setSelectedCell] = useState({
     row: 0,
     col: 0,
@@ -28,15 +30,27 @@ const SudokuBoard = () => {
 
   // Decide the cell's background color
   const getCellColor = (row, col) => {
-    if (row === selectedCell.row && col === selectedCell.col) {
-      return "bg-[#EAE5FF] text-[#6C4BEF] font-semibold";
+    const isConflict = conflicts.some(
+      (cell) => cell.row === row && cell.col === col,
+    );
+
+    if (isConflict) {
+      return "bg-red-100 text-red-600 font-semibold";
     }
 
-    if (isRelatedCell(row, col)) {
-      return "bg-[#F8F6FE] text-[#202033] hover:bg-[#F0ECFE]";
+    if (!isValidated) {
+      if (row === selectedCell.row && col === selectedCell.col) {
+        return "bg-[#EAE5FF] text-[#6C4BEF] font-semibold";
+      }
+
+      if (isRelatedCell(row, col)) {
+        return "bg-[#F8F6FE] text-[#202033] hover:bg-[#F0ECFE]";
+      }
+
+      return "bg-white text-[#202033] hover:bg-[#F8F6FE]";
     }
 
-    return "bg-white text-[#202033] hover:bg-[#F8F6FE]";
+    return "bg-white text-[#202033]";
   };
 
   // Decide the cell's borders
@@ -63,6 +77,8 @@ const SudokuBoard = () => {
   };
 
   const handleChange = (e) => {
+    if (isValidated) return;
+
     const value = e.target.value;
     const row = Number(e.target.dataset.row);
     const col = Number(e.target.dataset.col);
@@ -75,21 +91,20 @@ const SudokuBoard = () => {
     }
 
     if (value === "") {
-    const updatedPuzzle = [...puzzleValue];
-    updatedPuzzle[row] = [...puzzleValue[row]];
-    updatedPuzzle[row][col] = 0;
+      const updatedPuzzle = [...puzzleValue];
+      updatedPuzzle[row] = [...puzzleValue[row]];
+      updatedPuzzle[row][col] = 0;
 
-    setPuzzleValue(updatedPuzzle);
-    return;
-}
-
-    const result = isValidMove(puzzleValue, Number(digit), row, col);
-
-    if(result.isValid === false){
-      toast.error(result.reason);
+      setPuzzleValue(updatedPuzzle);
       return;
     }
 
+    const result = isValidMove(puzzleValue, Number(digit), row, col);
+
+    if (result.isValid === false) {
+      toast.error(result.reason);
+      return;
+    }
 
     const updatedPuzzle = [...puzzleValue];
 
@@ -111,6 +126,8 @@ const SudokuBoard = () => {
                 key={colIndex}
                 type="text"
                 inputMode="numeric"
+                disabled={isValidated}
+                readOnly={isValidated}
                 data-row={rowIndex}
                 data-col={colIndex}
                 value={
@@ -119,6 +136,7 @@ const SudokuBoard = () => {
                     : puzzleValue[rowIndex][colIndex]
                 }
                 onFocus={(e) => {
+                  if (isValidated) return;
                   setSelectedCell({
                     row: rowIndex,
                     col: colIndex,
@@ -127,7 +145,11 @@ const SudokuBoard = () => {
                   e.target.select();
                 }}
                 onChange={handleChange}
-                className={`flex h-full w-full cursor-pointer select-none items-center justify-center text-sm font-medium transition-colors duration-150 focus-visible:z-10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#6C4BEF] sm:text-base md:text-lg text-center align-middle${getCellBorder(rowIndex, colIndex)} ${getCellColor(rowIndex, colIndex)}`}
+                className={`flex h-full w-full select-none items-center justify-center text-sm font-medium transition-colors duration-150 sm:text-base md:text-lg text-center align-middle disabled:opacity-100 disabled:text-[#202033] ${
+                  isValidated
+                    ? "cursor-not-allowed"
+                    : "cursor-pointer focus-visible:z-10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#6C4BEF]"
+                }${getCellBorder(rowIndex, colIndex)} ${getCellColor(rowIndex, colIndex)}`}
               ></input>
             ))}
           </div>
