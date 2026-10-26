@@ -9,6 +9,7 @@ export const isValidMove = (puzzle, value, row, col) => {
       return {
         isValid: false,
         reason: `Duplicate element found at index [${row}, ${i}]`,
+        index: { row: row, col: i },
       };
     }
   }
@@ -23,6 +24,7 @@ export const isValidMove = (puzzle, value, row, col) => {
       return {
         isValid: false,
         reason: `Duplicate element found at index [${i}, ${col}]`,
+        index: { row: i, col: col },
       };
     }
   }
@@ -40,6 +42,7 @@ export const isValidMove = (puzzle, value, row, col) => {
         return {
           isValid: false,
           reason: `Duplicate element found at index [${i}, ${j}]`,
+          index: { row: i, col: j },
         };
       }
     }
@@ -51,3 +54,30 @@ export const isValidMove = (puzzle, value, row, col) => {
   };
 };
 
+export const validateSudoku = (puzzle) => {
+  for (let i = 0; i < 9; i++) {
+    for (let j = 0; j < 9; j++) {
+      if (puzzle[i][j] === 0) {
+        continue;
+      }
+
+      const result = isValidMove(puzzle, puzzle[i][j], i, j);
+
+      if (result.isValid === false) {
+        const conflict = [];
+        conflict.push({ row: i, col: j });
+        conflict.push(result.index);
+
+        return {
+          isValid: false,
+          conflicts: conflict,
+        };
+      }
+    }
+  }
+
+  return {
+    isValid: true,
+    conflicts: [],
+  };
+};

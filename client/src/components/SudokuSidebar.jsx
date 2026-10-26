@@ -1,11 +1,12 @@
 import React from "react";
 import {
+  MdOutlineEdit,
   MdOutlinePlayArrow,
   MdOutlineSkipNext,
   MdOutlineSkipPrevious,
 } from "react-icons/md";
 
-const SudokuSidebar = ({ onValidate }) => {
+const SudokuSidebar = ({ isValidated, onValidate, onEdit }) => {
   return (
     <aside
       className="w-full max-w-[534px] lg:w-[320px] xl:w-[340px] shrink-0 rounded-2xl sm:rounded-3xl bg-white p-5 sm:p-6 shadow-[0_4px_24px_-4px_rgba(32,32,51,0.06),0_2px_8px_-2px_rgba(32,32,51,0.04)] border border-[#E1DFEB]/70 flex flex-col justify-between"
@@ -78,7 +79,7 @@ const SudokuSidebar = ({ onValidate }) => {
         <div className="grid grid-cols-3 gap-2.5">
           <button
             type="button"
-            disabled
+            disabled={!isValidated}
             aria-label="Previous step"
             className="flex h-10 items-center justify-center rounded-xl border border-[#E1DFEB] bg-[#F7F6FC] text-[#77768A] transition-colors duration-150 disabled:opacity-50 disabled:cursor-not-allowed hover:enabled:bg-white hover:enabled:text-[#202033] hover:enabled:border-[#77758B]/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#6C4BEF]"
           >
@@ -87,7 +88,7 @@ const SudokuSidebar = ({ onValidate }) => {
 
           <button
             type="button"
-            disabled
+            disabled={!isValidated}
             aria-label="Play solver"
             className="flex h-10 items-center justify-center rounded-xl bg-[#6C4BEF] text-white shadow-xs transition-all duration-150 disabled:opacity-60 disabled:cursor-not-allowed hover:enabled:bg-[#5839D6] hover:enabled:shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#6C4BEF] focus-visible:ring-offset-2"
           >
@@ -96,7 +97,7 @@ const SudokuSidebar = ({ onValidate }) => {
 
           <button
             type="button"
-            disabled
+            disabled={!isValidated}
             aria-label="Next step"
             className="flex h-10 items-center justify-center rounded-xl border border-[#E1DFEB] bg-[#F7F6FC] text-[#77768A] transition-colors duration-150 disabled:opacity-50 disabled:cursor-not-allowed hover:enabled:bg-white hover:enabled:text-[#202033] hover:enabled:border-[#77758B]/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#6C4BEF]"
           >
@@ -105,18 +106,32 @@ const SudokuSidebar = ({ onValidate }) => {
         </div>
 
         <p className="mt-3 text-center text-[11px] leading-4 text-[#77768A]">
-          Start the solver to explore every move.
+          {isValidated
+            ? "Start the solver to explore every move."
+            : "Validate the puzzle first to explore steps."}
         </p>
 
-        {/* Validate Button */}
-        <button
-          type="button"
-          name="validate"
-          onClick={onValidate}
-          className="mt-4 w-full flex items-center justify-center h-10 sm:h-11 rounded-xl bg-[#6C4BEF] hover:bg-[#5839D6] text-white text-xs sm:text-sm font-semibold shadow-xs hover:shadow transition-all duration-150 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#6C4BEF] focus-visible:ring-offset-2 active:scale-[0.98]"
-        >
-          Validate
-        </button>
+        {/* Validate or Edit Button */}
+        {isValidated ? (
+          <button
+            type="button"
+            name="edit"
+            onClick={onEdit}
+            className="mt-4 w-full flex items-center justify-center gap-2 h-10 sm:h-11 rounded-xl border border-[#6C4BEF] bg-[#F7F5FF] hover:bg-[#ECE7FE] text-[#6C4BEF] text-xs sm:text-sm font-semibold shadow-xs hover:shadow transition-all duration-150 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#6C4BEF] focus-visible:ring-offset-2 active:scale-[0.98]"
+          >
+            <MdOutlineEdit className="text-base" />
+            Edit Puzzle
+          </button>
+        ) : (
+          <button
+            type="button"
+            name="validate"
+            onClick={onValidate}
+            className="mt-4 w-full flex items-center justify-center h-10 sm:h-11 rounded-xl bg-[#6C4BEF] hover:bg-[#5839D6] text-white text-xs sm:text-sm font-semibold shadow-xs hover:shadow transition-all duration-150 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#6C4BEF] focus-visible:ring-offset-2 active:scale-[0.98]"
+          >
+            Validate
+          </button>
+        )}
       </div>
     </aside>
   );
