@@ -1,5 +1,5 @@
 export const isValidMove = (puzzle, value, row, col) => {
-  //Row Check
+  // Row Check
   for (let i = 0; i < 9; i++) {
     if (i === col) {
       continue;
@@ -14,7 +14,7 @@ export const isValidMove = (puzzle, value, row, col) => {
     }
   }
 
-  //Column Check
+  // Column Check
   for (let i = 0; i < 9; i++) {
     if (i === row) {
       continue;
@@ -29,7 +29,7 @@ export const isValidMove = (puzzle, value, row, col) => {
     }
   }
 
-  //3X3 Box Check
+  // 3x3 Box Check
   const boxStartRow = Math.floor(row / 3) * 3;
   const boxStartCol = Math.floor(col / 3) * 3;
   for (let i = boxStartRow; i < boxStartRow + 3; i++) {
@@ -55,6 +55,9 @@ export const isValidMove = (puzzle, value, row, col) => {
 };
 
 export const validateSudoku = (puzzle) => {
+  const conflicts = [];
+  const conflictKeys = new Set();
+
   for (let i = 0; i < 9; i++) {
     for (let j = 0; j < 9; j++) {
       if (puzzle[i][j] === 0) {
@@ -64,16 +67,25 @@ export const validateSudoku = (puzzle) => {
       const result = isValidMove(puzzle, puzzle[i][j], i, j);
 
       if (result.isValid === false) {
-        const conflict = [];
-        conflict.push({ row: i, col: j });
-        conflict.push(result.index);
-
-        return {
-          isValid: false,
-          conflicts: conflict,
-        };
+        const key1 = `${i}-${j}`;
+        if (!conflictKeys.has(key1)) {
+          conflictKeys.add(key1);
+          conflicts.push({ row: i, col: j });
+        }
+        const key2 = `${result.index.row}-${result.index.col}`;
+        if (!conflictKeys.has(key2)) {
+          conflictKeys.add(key2);
+          conflicts.push(result.index);
+        }
       }
     }
+  }
+
+  if (conflicts.length > 0) {
+    return {
+      isValid: false,
+      conflicts,
+    };
   }
 
   return {
